@@ -1,0 +1,83 @@
+<!--
+  - rules.xml
+  - Rules definitions for traced applications
+  -
+  - When process is found, tracer looks into this file and searches for its parent rules.
+  - If rule is found, action is performed. These two actions can be done:
+  -     * Return the actual process
+  -     * Find the rule for parent process
+  -
+  -
+  - Copyright (C) 2016 Jakub Kadlcik
+  -
+  - This copyrighted material is made available to anyone wishing to use,
+  - modify, copy, or redistribute it subject to the terms and conditions of
+  - the GNU General Public License v.2, or (at your option) any later version.
+  - This program is distributed in the hope that it will be useful, but WITHOUT
+  - ANY WARRANTY expressed or implied, including the implied warranties of
+  - MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General
+  - Public License for more details.  You should have received a copy of the
+  - GNU General Public License along with this program; if not, write to the
+  - Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+  - 02110-1301, USA.
+  -
+  -
+  -
+  - Rule syntax:
+  -     <rule name="app_name" action="some_action" />
+  -
+  - Default action:
+  -     'call-parent'
+  -
+  - Available actions:
+  -     'call-parent' - Use it for parts of the application (i.e. chrome-sandbox)
+  -     'return' - Use it for the whole application (i.e. chromium)
+  -
+  -->
+
+<rules>
+	<rule name="sd-pam" />
+
+	<!-- KDE -->
+	<rule name="kwin" action="return" />
+	<rule name="seapplet" action="return" />
+	<rule name="akonadiserver" />
+	<rule name="ksmserver" />
+	<rule name="akonadi_agent_launcher" />
+	<rule name="akonadi_archivemail_agent" />
+	<rule name="akonadi_birthdays_resource" />
+	<rule name="akonadi_folderarchive_agent" />
+	<rule name="akonadi_maildispatcher_agent" />
+	<rule name="akonadi_mailfilter_agent" />
+	<rule name="akonadi_migration_agent" />
+	<rule name="akonadi_nepomuk_feeder" />
+	<rule name="akonadi_newmailnotifier_agent" />
+	<rule name="akonadi_sendlater_agent" />
+	<rule name="abrt-applet" />
+
+	<!-- MATE -->
+	<rule name="mate-session" />
+
+	<!-- Xfce -->
+	<rule name="xfce4-session" />
+	<rule name="xfce4-terminal" action="return" />
+
+	<!-- LXDE -->
+	<rule name="lxsession" />
+	<rule name="lxdm-binary" action="return"/>
+
+	<!-- Networking -->
+	<rule name="wicd" action="return" />
+
+	<!-- Web browsers -->
+	<rule name="chrome" action="return" />
+	<rule name="chromium" action="return" />
+	<rule name="firefox" action="return" />
+	<rule name="chrome-sandbox" />
+	<rule name="plugin-container" />
+
+	<rule name="pidgin" action="return" />
+	<rule name="urxvt" action="return" />
+	<rule name="xmonad-i386-linux" action="return" />
+
+</rules>

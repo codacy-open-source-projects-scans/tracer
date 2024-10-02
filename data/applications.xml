@@ -1,0 +1,186 @@
+<!--
+  - applications.xml
+  - Defines the characteristics for specific applications
+  -
+  - Just before the application is printed, tracer looks into this file.
+  - When some definition matches, tracer examines its type. Daemons can be
+  - printed different way than regular applications. Also applications marked
+  - as 'static' will not be printed, cause only way how to restart them is reboot.
+  -
+  -
+  - Copyright (C) 2016 Jakub Kadlcik
+  -
+  - This copyrighted material is made available to anyone wishing to use,
+  - modify, copy, or redistribute it subject to the terms and conditions of
+  - the GNU General Public License v.2, or (at your option) any later version.
+  - This program is distributed in the hope that it will be useful, but WITHOUT
+  - ANY WARRANTY expressed or implied, including the implied warranties of
+  - MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General
+  - Public License for more details.  You should have received a copy of the
+  - GNU General Public License along with this program; if not, write to the
+  - Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+  - 02110-1301, USA.
+  -
+  -
+  -
+  - Available types:
+  -     * daemon - Application is managed by init system
+  -     * static - Application is restartable only through rebooting the system
+  -     * session - Application is restartable only through restarting the session
+  -                 (i.e. Log out & Log in again)
+  -
+  - Application syntax:
+  -     <app name="app_name1" type="daemon" />
+  -     <app name="app_name2" helper="Run this command: app_name2 stop" />
+  -     <app name="app_name3" rename="app_name_3" />
+  -     <app name="app_name4" ignore="ignore" />
+  -     <app name="app_name5" rename="app_name1" />
+  -
+  -
+  - Note that applications can be wrapped into group. In this case please set
+  - attributes to the group and omit them from applications
+  -
+  - Group syntax
+  -     <group type="static">
+  -         <app name="app_name1" />
+  -         <app name="app_name2" />
+  -         <app name="app_name3" />
+  -     </group>
+  -
+  - Helpers:
+  -     Obviously you can specify the helper and set the command for restarting
+  -     the application. I.e. helper="myapp restart".
+  -     What is actually more interesting is that you can add various arguments.
+  -
+  -     <app name="app_name" helper="kill {PID}" />
+  -
+  - Helper arguments:
+  -     * {PNAME} - Name of the process
+  -     * {NAME}  - Name of the application
+  -     * {PID}   - Process ID
+  -     * {EXE}   - Process binary
+  -
+  - Helper note:
+  -     It's possible to set additional helper note which is shown only when
+  -     displaying application's details. It should contain additional
+  -     explanation to command used as helper or any important imformation.
+  -
+  -     <app name="app_name" type="session"
+  -          note="It cares of desktop, so you can't close it directly" />
+  -
+  -->
+
+<applications>
+
+	<!--
+	   - Common applications
+	  -->
+
+	<group type="static">
+		<app name="dbus-daemon" />
+		<app name="gvfsd-metadata" />
+		<app name="at-spi-bus-launcher" />
+		<app name="gconfd-2" />
+		<app name="systemd" />
+	</group>
+
+	<group type="session">
+		<app name="dbus-launch" />
+		<app name="X" />
+		<app name="xmonad-i386-linux" />
+		<app name="openbox" />
+		<app name="kdeinit4: kdeinit4 Running..." />
+		<app name="plasma-desktop" />
+		<app name="korgac" />
+		<app name="gvfsd" />
+		<app name="gvfs-udisks2-volume-monitor" />
+		<app name="gvfs-afc-volume-monitor" />
+		<app name="nm-applet" />
+	</group>
+
+	<app name="auditd" type="daemon" helper="service auditd restart" />
+	<app name="dropbox" helper="dropbox stop; dropbox start" />
+	<app name="pulseaudio" helper="pulseaudio --kill; pulseaudio --start" />
+	<app name="gnome-shell" helper="killall -3 gnome-shell" />
+	<app name="tracker-store" helper="tracker daemon --terminate=store; tracker daemon --start store" />
+
+	<!--
+	   - Login Managers
+	   -->
+	<group type="static">
+		<app name="lightdm" />
+	</group>
+
+
+	<!--
+	   - KDE applications
+	  -->
+
+	<group helper="kdeinit4">
+		<app name="klauncher" />
+	</group>
+
+	<group type="session">
+		<app name="kuiserver" />
+		<app name="kglobalaccel" />
+		<app name="kactivitymanagerd" />
+		<app name="kded4" />
+		<app name="knotify4" />
+		<app name="kwalletd" />
+		<app name="kdeinit4" />
+	</group>
+
+	<app name="akonadi_control" helper="akonadictl restart" />
+	<app name="akonadiserver" helper="akonadictl restart" />
+
+
+	<!--
+	   - MATE applications
+	  -->
+	<group type="session">
+		<app name="gnome-keyring-daemon" />
+		<app name="gvfs-gphoto2-volume-monitor" />
+		<app name="gvfs-mtp-volume-monitor" />
+		<app name="gvfsd-fuse" />
+		<app name="gvfsd-trash" />
+		<app name="imsettings-daemon" />
+		<app name="mate-session" />
+		<app name="clock-applet" />
+		<app name="notification-area-applet" />
+		<app name="wnck-applet" />
+		<app name="dconf-service" />
+	</group>
+
+
+	<!--
+	   - Xfce applications
+	  -->
+	<group type="session">
+		<app name="xfce4-notifyd" />
+		<app name="xfce4-power-manager" />
+		<app name="xfce4-session" />
+		<app name="xfconfd" />
+		<app name="xfsettingsd" />
+		<app name="panel-2-actions" />
+		<app name="panel-6-systray" />
+	</group>
+
+
+	<!--
+	   - LXDE applications
+	  -->
+	<group type="session">
+		<app name="lxdm-binary" />
+		<app name="clipit" />
+		<app name="pcmanfm" note="It cares about desktop icons and can't be restarted directly." />
+		<app name="pnmixer" />
+		<app name="lxpolkit" />
+	</group>
+
+
+	<!-- We should just ignore sudo -->
+	<!-- https://github.com/FrostyX/tracer/issues/162 -->
+	<app name="sudo" ignore="ignore" />
+	<app name="su" ignore="ignore" />
+
+</applications>
