@@ -62,6 +62,8 @@ class DefaultController(object):
 		self.applications = self.tracer.trace_affected(self._user(args.user))
 		if self.args.daemons_only:
 			self.applications = self.applications.filter_types([Applications.TYPES["DAEMON"]])
+		elif self.args.reboot_only:
+			self.applications = self.applications.filter_types([Applications.TYPES["STATIC"]])
 
 	def render(self):
 		if not self.args.hooks_only:
@@ -142,7 +144,7 @@ class DefaultController(object):
 		If a reboot is needed, create a /run/reboot-required file.
 		This is how Debian/Ubuntu distros does it.
 		"""
-		if self.applications.count_type(Applications.TYPES["STATIC"]):
+		if os.getuid() == 0 and self.applications.count_type(Applications.TYPES["STATIC"]):
 			with open("/run/reboot-required", "w") as fp:
 				fp.write("Tracer says reboot is required for:\n")
 				for app in self.applications.filter_types([Applications.TYPES["STATIC"]]).unique().sorted("name"):
