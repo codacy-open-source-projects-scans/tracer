@@ -37,14 +37,16 @@ class Applications(object):
 	DEFINITIONS = map(lambda x: x + "/applications.xml", [DATA_DIR] + USER_CONFIG_DIRS)
 
 	TYPES = {
-		"DAEMON"       :  "daemon",
-		"STATIC"       :  "static",
-		"SESSION"      :  "session",
-		"APPLICATION"  :  "application",
-		"ERASED"       :  "erased",
-		"UNDEF"        :  "undefined" #Internal only
+		"DAEMON"         :  "daemon",
+		"STATIC"         :  "static",
+		"STATIC_PACKAGE" :  "static-package",
+		"SESSION"        :  "session",
+		"APPLICATION"    :  "application",
+		"ERASED"         :  "erased",
+		"UNDEF"          :  "undefined" #Internal only
 	}
 	DEFAULT_TYPE = TYPES["APPLICATION"]
+	REBOOT_TYPES = [TYPES["STATIC"], TYPES["STATIC_PACKAGE"]]
 	_apps = None
 
 	@staticmethod
@@ -78,7 +80,7 @@ class Applications(object):
 		for file in Applications.DEFINITIONS:
 			try: Applications._load(file)
 			except PathNotFound as ex:
-				if not os.path.dirname(file) in USER_CONFIG_DIRS:
+				if os.path.dirname(file) not in USER_CONFIG_DIRS:
 					raise ex
 
 	@classmethod
@@ -135,7 +137,7 @@ class Applications(object):
 			else:
 				return "service {0} restart".format(app.name)
 
-		elif app.type == Applications.TYPES["STATIC"]:
+		elif app.type in Applications.REBOOT_TYPES:
 			return _("You will have to reboot your computer")
 
 		elif app.type == Applications.TYPES["SESSION"]:

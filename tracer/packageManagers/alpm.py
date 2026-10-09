@@ -24,7 +24,6 @@ if System.distribution() in ["arch", "archarm"]:
 	from .ipackageManager import IPackageManager
 	from tracer.resources.package import Package
 	from tracer.resources.collections import PackagesCollection
-	from tracer.resources.applications import Applications
 	import pyalpm
 
 	class Alpm(IPackageManager):
@@ -85,6 +84,12 @@ if System.distribution() in ["arch", "archarm"]:
 			pkg = self.db.get_pkg(pkg_name)
 			if pkg and pyalpm.vercmp(pkg.version, version) == 0:
 				return pkg
+
+		def package_name_only(self, pkg_object):
+			"""
+			Transform our search result into a string with the package name
+			"""
+			return pkg_object.name
 
 		def compare_packages(self, package1, package2):
 			"""

@@ -18,7 +18,6 @@
 
 from __future__ import absolute_import
 
-import os
 from psutil import NoSuchProcess
 from tracer.resources.package import Package
 from tracer.resources.system import System
@@ -99,7 +98,7 @@ class Tracer(object):
 			for file in self._PACKAGE_MANAGER.package_files(package.name):
 
 				file = FilenameCleaner.strip(file)
-				if not file in memory:
+				if file not in memory:
 					continue
 
 				for p in memory[file]:
@@ -128,7 +127,27 @@ class Tracer(object):
 			affected['kernel'] = AffectedApplication({"name": "kernel", "type": Applications.TYPES["STATIC"],
 									"helper": _("You will have to reboot your computer")})
 
+		self._affected_static_packages(affected, packages)
+
 		return ApplicationsCollection(affected.values())
+
+	def _affected_static_packages(self, affected, packages):
+		"""
+		Add static-package applications whose package has been modified
+		since the reference timestamp (boot time by default).
+		"""
+		modified_package_names = set(p.name for p in packages)
+		for app in self._applications.all():
+			if app.type != Applications.TYPES["STATIC_PACKAGE"]:
+				continue
+			if app.name in affected:
+				continue
+			if app.ignore:
+				continue
+			if app.name in modified_package_names:
+				affected[app.name] = AffectedApplication(app._attributes)
+				affected[app.name].affected_instances = AffectedProcessesCollection()
+				self._call_hook(affected[app.name])
 
 	def _has_updated_kernel(self):
 		running = System.running_kernel_package()
@@ -137,7 +156,7 @@ class Tracer(object):
 			""" If the running kernel package could not be determined, abort """
 			return False
 
-		kernel_package_name = System.kernel_package_name()
+		kernel_package_name = self._PACKAGE_MANAGER.package_name_only(running)
 		latest = Package(kernel_package_name)
 		latest.load_info(self._PACKAGE_MANAGER)
 
@@ -188,7 +207,7 @@ class Tracer(object):
 			matching_files = set()
 			for package_file in self._PACKAGE_MANAGER.package_files(package.name):
 				package_file = FilenameCleaner.strip(package_file)
-				if not package_file in process_files:
+				if package_file not in process_files:
 					continue
 
 				if process.create_time() <= package.modified:

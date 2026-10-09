@@ -28,7 +28,6 @@ if System.distribution() == "gentoo":
 	from tracer.resources.collections import PackagesCollection
 	from gentoolkit.helpers import FileOwner
 	from tracer.resources.exceptions import DatabasePermissions
-	from tracer.resources.applications import Applications
 	import os
 	import portage
 	import subprocess
@@ -94,6 +93,12 @@ if System.distribution() == "gentoo":
 
 			package.description = description
 			package.category = category
+
+		def package_name_only(self, pkg_object):
+			"""
+			Transform our search result into a string with the package name
+			"""
+			return pkg_object.name
 
 		def provided_by(self, app):
 			"""Returns a package which provides given application"""
